@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  openclaw:
+    image: ghcr.io/openclaw/openclaw:latest
+    container_name: openclaw-workshop
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+    volumes:
+      - openclaw_data:/root/.openclaw
+      - ./skills/interview-agent:/root/.openclaw/skills/interview-agent
+    environment:
+      - OPENCLAW_GATEWAY_PORT=18789
+      # Descomente e preencha com sua chave de API do provedor que você usa:
+      # - OPENAI_API_KEY=sua-chave-aqui
+      # - ANTHROPIC_API_KEY=sua-chave-aqui
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    healthcheck:
+      test: ["CMD", "openclaw", "gateway", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  openclaw_data:
+    driver: local
