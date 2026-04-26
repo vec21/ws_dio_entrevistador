@@ -1,6 +1,6 @@
 # Workshop OpenClaw — Entrevistador Técnico
 
-Neste workshop você vai montar um assistente que conduz entrevistas técnicas estruturadas. Ele analisa vagas, monta planos de entrevista, faz perguntas uma a uma, avalia respostas e gera um relatório final.
+Neste workshop você vai montar um assistente que conduz entrevistas técnicas estruturadas. Ele analisa vagas, monta planos de entrevista, faz perguntas uma a uma, avalia respostas e gera um relat[...]
 
 Tudo roda local na sua máquina usando Docker. Sem instalar Node, sem scripts soltos, sem complicação.
 
@@ -66,9 +66,9 @@ Para o workshop, o Gemini 2.5 Flash gratuito resolve tranquilamente. Só conside
 
 ## O que é o OpenClaw?
 
-OpenClaw é um assistente pessoal que roda no seu computador. Você conversa com ele por texto (WhatsApp, Telegram, Slack, Discord, terminal, etc.) e ele responde usando modelos de linguagem como GPT-4, Claude ou Gemini.
+OpenClaw é um assistente pessoal que roda no seu computador. Você conversa com ele por texto (WhatsApp, Telegram, Slack, Discord, terminal, etc.) e ele responde usando modelos de linguagem como [...]
 
-O diferencial é que ele é extensível por **skills** — arquivos de texto que ensinam o assistente a fazer coisas específicas. Neste workshop, vamos criar uma skill que transforma o OpenClaw em um entrevistador técnico.
+O diferencial é que ele é extensível por **skills** — arquivos de texto que ensinam o assistente a fazer coisas específicas. Neste workshop, vamos criar uma skill que transforma o OpenClaw e[...]
 
 ---
 
@@ -255,6 +255,19 @@ Cada modo responde em JSON estruturado, o que facilita integração com outros s
 
 ---
 
+## Challenge Enhancements (Adaptações para o Desafio OpenClaw)
+
+Esta versão do repositório inclui adaptações especiais para participar no desafio do DEV.to sobre OpenClaw (abril 2026):
+
+- **Suporte Bilingue**: A skill agora responde em português ou inglês automaticamente (detecta o idioma da descrição da vaga) ou pode ser forçado com "switch to English".
+- **Pontuação Detalhada**: Avaliação usa escala 1-5 com sub-scores para técnico, comportamental e domínio, facilitando análises mais granulares.
+- **Loop de Feedback Iterativo**: Durante a simulação, oferece opção de refinar perguntas com base nas respostas, melhorando a qualidade da entrevista.
+- **JSON Aprimorado**: Estruturas de saída mais ricas para potencial integração com APIs externas (e.g., adicionar campos como `idioma_principal`, `feedback_sugestao`).
+
+Teste com prompts em inglês para ver a mudança de idioma. Exemplo: "Use the interview_agent skill to analyze this job in English."
+
+---
+
 ## Passo 5 — Testar: Analisar uma vaga
 
 Vamos ao primeiro teste. Na interface web do OpenClaw (ou pelo terminal), envie esta mensagem:
@@ -310,19 +323,21 @@ Requisitos:
 
 ### O que esperar
 
-Um JSON com a estrutura da vaga decomposta:
+Um JSON com a estrutura da vaga decomposta (agora com campos adicionais como `idioma_principal` e `dificuldade_estimada`):
 
 ```json
 {
   "cargo": "Senior Backend Engineer",
   "senioridade": "senior",
   "contexto_negocio": "Fintech",
+  "idioma_principal": "en",
   "responsabilidades_principais": ["..."],
   "competencias_tecnicas": ["..."],
   "competencias_comportamentais": ["..."],
   "conhecimento_dominio": ["..."],
   "temas_entrevista": ["..."],
-  "sinais_risco": ["..."]
+  "sinais_risco": ["..."],
+  "dificuldade_estimada": "alta"
 }
 ```
 
@@ -342,7 +357,7 @@ A entrevista deve durar 60 minutos. Responda em JSON.
 
 ### O que esperar
 
-Um plano com etapas, tempo estimado por etapa, perguntas sugeridas e critérios de avaliação (fraco/aceitável/forte) para cada uma.
+Um plano com etapas, tempo estimado por etapa, perguntas sugeridas e critérios de avaliação (agora em escala 1-5) para cada uma.
 
 Isso resolve um problema real: montar entrevistas consistentes. Em vez de cada entrevistador inventar perguntas na hora, você tem um roteiro padronizado.
 
@@ -432,11 +447,17 @@ Responda em JSON.
   "pergunta": "...",
   "resumo_resposta": "...",
   "competencia_avaliada": "...",
-  "nota": "forte",
+  "nota_geral": 4,
+  "sub_scores": {
+    "tecnico": 5,
+    "comportamental": 4,
+    "dominio": 3
+  },
   "sinais_positivos": ["..."],
   "sinais_negativos": ["..."],
   "sinais_ausentes": ["..."],
-  "pergunta_complementar": "..."
+  "pergunta_complementar": "...",
+  "feedback_sugestao": "..."
 }
 ```
 
@@ -468,7 +489,7 @@ Responda em JSON.
 
 ### O que esperar
 
-Um relatório com recomendação clara ("avançar", "em dúvida" ou "não avançar"), nível de confiança, pontos fortes, riscos e próximos passos sugeridos.
+Um relatório com recomendação clara ("avançar", "em dúvida" ou "não avançar"), nível de confiança, pontos fortes, riscos e próximos passos sugeridos (agora com sub-scores e feedback geral).
 
 ---
 
